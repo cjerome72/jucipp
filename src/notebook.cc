@@ -364,8 +364,8 @@ void Notebook::open(const boost::filesystem::path &file_path, size_t notebook_in
 }
 
 void Notebook::configure(size_t index) {
-#if GTKSOURCEVIEWMM_MAJOR_VERSION > 2 & GTKSOURCEVIEWMM_MINOR_VERSION > 17
   auto source_font_description=Pango::FontDescription(Config::get().source.font);
+#if GTKSOURCEVIEWMM_MAJOR_VERSION > 2 & GTKSOURCEVIEWMM_MINOR_VERSION > 17
   auto source_map_font_desc=Pango::FontDescription(static_cast<std::string>(source_font_description.get_family())+" "+Config::get().source.map_font_size); 
   source_maps.at(index)->override_font(source_map_font_desc);
   if(Config::get().source.show_map) {
@@ -375,6 +375,11 @@ void Notebook::configure(size_t index) {
   else if(hboxes.at(index)->get_children().size()==2)
     hboxes.at(index)->remove(*source_maps.at(index));
 #endif
+  status_branch.override_font(source_font_description);
+  status_diagnostics.override_font(source_font_description);
+  status_file_path.override_font(source_font_description);
+  status_location.override_font(source_font_description);
+  status_state.override_font(source_font_description);
 }
 
 bool Notebook::save(size_t index) {
