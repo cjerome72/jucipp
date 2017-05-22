@@ -877,6 +877,22 @@ void Window::set_menu_actions() {
       }
     }
   });
+  menu.add_action("source_goto_source", [this]() {
+    auto paths = Directories::get().getFiles();
+    if (auto view = Notebook::get().get_current_view()) {
+      auto dialog_iter = view->get_iter_for_dialog();
+      SelectionDialog::create(view, view->get_buffer()->create_mark(dialog_iter), true, true);
+     for(auto path : paths) {
+        SelectionDialog::get()->add_row(path.string());
+      }
+      SelectionDialog::get()->on_select=[view](const std::string& selected, bool hide_window) {
+        Notebook::get().open(boost::filesystem::path(selected));  
+        view->hide_tooltips();
+      };
+      view->hide_tooltips();
+      SelectionDialog::get()->show();
+    }
+  });
   menu.add_action("source_rename", [this]() {
     rename_token_entry();
   });
@@ -1218,6 +1234,7 @@ void Window::activate_menu_items() {
   menu.actions["source_goto_declaration_or_implementation"]->set_enabled(view && view->get_declaration_or_implementation_locations);
   menu.actions["source_goto_usage"]->set_enabled(view && view->get_usages);
   menu.actions["source_goto_method"]->set_enabled(view && view->get_methods);
+  menu.actions["source_goto_source"]->set_enabled(true);
   menu.actions["source_rename"]->set_enabled(view && view->rename_similar_tokens);
   menu.actions["source_implement_method"]->set_enabled(view && view->get_method);
   menu.actions["source_goto_next_diagnostic"]->set_enabled(view && view->goto_next_diagnostic);

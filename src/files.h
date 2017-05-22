@@ -122,6 +122,7 @@ R"RAW(
         "source_goto_usage": "<primary>u",
         "source_goto_method": "<primary>m",
         "source_rename": "<primary>r",
+        "source_goto_source": "<primary><shift>r",
         "source_implement_method": "<primary><shift>m",
         "source_goto_next_diagnostic": "<primary>e",
         "source_apply_fix_its": "<control>space",

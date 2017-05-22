@@ -64,6 +64,7 @@ public:
   void update();
   void on_save_file(boost::filesystem::path file_path);
   void select(const boost::filesystem::path &path);
+  std::vector<boost::filesystem::path> getFiles();
   
   boost::filesystem::path path;
   

@@ -420,7 +420,16 @@ void Directories::on_save_file(boost::filesystem::path file_path) {
     colorize_path(it->first, true);
   }
 }
-
+std::vector<boost::filesystem::path> Directories::getFiles()
+{
+  std::vector<boost::filesystem::path> returnedValue;
+  tree_store->foreach_iter([this, &returnedValue](const Gtk::TreeModel::iterator &iter) {
+    if (boost::filesystem::is_regular_file(iter->get_value(column_record.path)))
+      returnedValue.emplace_back(iter->get_value(column_record.path));
+    return false;
+  });
+  return returnedValue;
+}
 void Directories::select(const boost::filesystem::path &select_path) {
   if(path=="")
     return;
