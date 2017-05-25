@@ -10,7 +10,7 @@
 #include "info.h"
 #include "ctags.h"
 #include "selection_dialog.h"
-
+#include <sstream>
 namespace sigc {
 #ifndef SIGC_FUNCTORS_DEDUCE_RESULT_TYPE_WITH_DECLTYPE
   template <typename Functor>
@@ -893,6 +893,34 @@ void Window::set_menu_actions() {
       SelectionDialog::get()->show();
     }
   });
+  menu.add_action("find_in_files", [this]() {
+    auto paths = Directories::get().getFiles();
+    if (auto view = Notebook::get().get_current_view()) {
+      auto dialog_iter = view->get_iter_for_dialog();
+      
+     SelectionDialog::create(view, view->get_buffer()->create_mark(dialog_iter), true, false);
+     auto grep = filesystem::grep(paths, view->get_selected_text());
+     auto rows = std::make_shared<std::unordered_map<std::string, Source::Offset>>();
+     for (auto found : grep) {
+       std::stringstream ss;
+       ss << found.first.file_path << ":" << found.first.line+1 << " " << found.second;
+       (*rows)[ss.str()] = found.first;
+       SelectionDialog::get()->add_row(ss.str());
+     }
+     SelectionDialog::get()->on_select = [view, rows](const std::string &selected, bool hide_window) {
+       auto offset = rows->at(selected);
+       if (!boost::filesystem::is_regular_file(offset.file_path))
+         return;
+       Notebook::get().open(offset.file_path);
+       auto view = Notebook::get().get_current_view();
+       view->place_cursor_at_line_index(offset.line, offset.index);
+       view->scroll_to(view->get_buffer()->get_insert(), 0.0, 1.0, 0.5);
+       view->hide_tooltips();
+     };
+     view->hide_tooltips();
+     SelectionDialog::get()->show();
+    }
+  });
   menu.add_action("source_rename", [this]() {
     rename_token_entry();
   });
@@ -1234,7 +1262,8 @@ void Window::activate_menu_items() {
   menu.actions["source_goto_declaration_or_implementation"]->set_enabled(view && view->get_declaration_or_implementation_locations);
   menu.actions["source_goto_usage"]->set_enabled(view && view->get_usages);
   menu.actions["source_goto_method"]->set_enabled(view && view->get_methods);
-  menu.actions["source_goto_source"]->set_enabled(true);
+  menu.actions["source_goto_source"]->set_enabled(view);
+  menu.actions["find_in_files"]->set_enabled(view);
   menu.actions["source_rename"]->set_enabled(view && view->rename_similar_tokens);
   menu.actions["source_implement_method"]->set_enabled(view && view->get_method);
   menu.actions["source_goto_next_diagnostic"]->set_enabled(view && view->goto_next_diagnostic);

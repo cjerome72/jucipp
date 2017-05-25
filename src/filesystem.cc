@@ -233,3 +233,20 @@ boost::filesystem::path filesystem::get_relative_path(const boost::filesystem::p
 
   return relative_path;
 }
+search_result filesystem::grep(const std::vector<boost::filesystem::path>& paths,const std::string& text) {
+  search_result res;
+  std::string line;
+  for (auto path : paths) {
+    std::ifstream input(path.string());
+    size_t lineNb = 0;
+    while (std::getline(input, line)) {
+      size_t pos = line.find(text);
+      if ( pos != std::string::npos) {
+        res.emplace_back(std::make_pair(Source::Offset(lineNb,pos,path),line));
+      }
+      ++lineNb;
+    }
+    input.close();
+  }
+  return res;
+}

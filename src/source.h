@@ -60,7 +60,7 @@ namespace Source {
     void replace_forward(const std::string &replacement);
     void replace_backward(const std::string &replacement);
     void replace_all(const std::string &replacement);
-    
+    std::string get_selected_text();
     void paste();
     
     Glib::RefPtr<Gsv::Language> language;

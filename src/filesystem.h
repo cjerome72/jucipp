@@ -4,7 +4,8 @@
 #include <string>
 #include <boost/filesystem.hpp>
 #include <gtkmm.h>
-
+#include "source.h"
+using search_result = std::vector<std::pair<Source::Offset,std::string>>;
 class filesystem {
 public:
   static std::string read(const std::string &path);
@@ -36,5 +37,6 @@ public:
   
   ///Returns empty path on failure
   static boost::filesystem::path get_relative_path(const boost::filesystem::path &path, const boost::filesystem::path &base) noexcept;
+  static search_result grep(const std::vector<boost::filesystem::path>& paths,const std::string& text);
 };
 #endif  // JUCI_FILESYSTEM_H_

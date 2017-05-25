@@ -84,6 +84,10 @@ const Glib::ustring menu_xml= R"RAW(<interface>
         <attribute name='label' translatable='yes'>_Toggle _Comments</attribute>
         <attribute name='action'>app.source_comments_toggle</attribute>
       </item>
+      <item>
+        <attribute name='label' translatable='yes'>_Find _in _Files</attribute>
+        <attribute name='action'>app.find_in_files</attribute>
+      </item>
     </section>
   </menu>
   <menu id='juci-menu'>

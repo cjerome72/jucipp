@@ -1316,7 +1316,12 @@ std::string Source::View::get_token(Gtk::TextIter iter) {
   
   return get_buffer()->get_text(start, end);
 }
-
+std::string Source::View::get_selected_text() {
+  Gtk::TextIter start;
+  Gtk::TextIter end;
+  get_buffer()->get_selection_bounds(start, end);
+  return get_buffer()->get_text(start, end);
+}
 void Source::View::cleanup_whitespace_characters_on_return(const Gtk::TextIter &iter) {
   auto start_blank_iter=iter;
   auto end_blank_iter=iter;
